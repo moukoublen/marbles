@@ -6,6 +6,9 @@ export GO111MODULE
 env:
 		go env
 
+test:
+		go test $$(go list ./...)
+
 fmt:
 		go fmt $$(go list ./...)
 
@@ -37,4 +40,4 @@ install:
 uninstall:
 		rm -f /usr/local/bin
 
-.PHONY: env fmt lint vet mod vendor build run clean install uninstall
+.PHONY: env test fmt lint vet mod vendor build run clean install uninstall
