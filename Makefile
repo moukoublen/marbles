@@ -3,6 +3,9 @@ default: build
 GO111MODULE?=on
 export GO111MODULE
 
+EXEC?=marbles
+MAINCMD?=./cmd/marbles
+
 env:
 		go env
 
@@ -26,18 +29,18 @@ vendor: mod
 		go mod vendor
 
 build: vendor
-		go build -mod=vendor -a -o marbles ./cmd/marbles
+		go build -mod=vendor -a -o $(EXEC) $(MAINCMD)
 
 run: vendor
-		go run -mod=vendor ./cmd/marbles
+		go run -mod=vendor $(MAINCMD)
 
 clean:
-		rm -f marbles
+		rm -f $(EXEC)
 
 install:
-		cp marbles /usr/local/bin
+		cp $(EXEC) /usr/local/bin
 
 uninstall:
-		rm -f /usr/local/bin
+		rm -f /usr/local/bin/$(EXEC)
 
 .PHONY: env test fmt lint vet mod vendor build run clean install uninstall
