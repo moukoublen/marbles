@@ -10,7 +10,7 @@ import (
 
 func filenameFromURL(url string) string {
 	a := strings.Split(url, "/")
-	if a == nil || len(a) == 0 {
+	if len(a) == 0 {
 		return ""
 	}
 	return a[len(a)-1]
@@ -20,7 +20,7 @@ var rgxFilename = regexp.MustCompile(`filename="(.*)"`)
 
 func filenameFromContentDisposition(cd string) string {
 	r := rgxFilename.FindStringSubmatch(cd)
-	if r != nil && len(r) >= 2 {
+	if len(r) >= 2 {
 		return r[1]
 	}
 	return ""
