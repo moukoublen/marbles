@@ -44,7 +44,7 @@ func TestProgressWriterWithInternalChannel(t *testing.T) {
 
 	s := NewProgressWritterWithInternalChannel("test", r.Size(), utils.DropWriter)
 
-	io.Copy(s, r)
+	_, _ = io.Copy(s, r)
 
 	p := receiveProgressReport(t, s.Progress())
 	assertCompletion(t, 0.157, p.Completion)
