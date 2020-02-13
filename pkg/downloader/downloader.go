@@ -32,8 +32,12 @@ func filenameFromHeader(url string) string {
 		return ""
 	}
 
-	n := resp.Header.Get("content-disposition")
-	return n
+	f := filenameFromContentDisposition(resp.Header.Get("content-disposition"))
+	if f != "" {
+		return f
+	}
+
+	return filenameFromURL(f)
 }
 
 // GetFilename returns the filename of file to download.

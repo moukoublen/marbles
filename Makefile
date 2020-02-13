@@ -10,7 +10,13 @@ env:
 		go env
 
 test:
-		go test $$(go list ./...)
+		go test -timeout 60s $$(go list ./...)
+
+test-coverage:
+		go test -timeout 60s -coverprofile cover.out -covermode atomic $$(go list ./...)
+		go tool cover -func cover.out
+		rm cover.out
+
 
 fmt:
 		go fmt $$(go list ./...)

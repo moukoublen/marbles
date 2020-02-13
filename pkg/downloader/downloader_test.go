@@ -12,7 +12,7 @@ func TestGetFilenameFromURL(t *testing.T) {
 		{"", ""},
 		{"https://download.internet.o/files/file1.tar.bz2", "file1.tar.bz2"},
 		{"https://download.internet.o/files/", ""},
-		{"file", ""},
+		{"file", "file"},
 	}
 
 	for _, testcase := range testcases {
