@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -101,5 +102,46 @@ func TestGetFilename(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestDownload(t *testing.T) {
+	var testcases = map[string]struct {
+		url           string
+		response      clientResponse
+		expectedData  []byte
+		expectedError error
+	}{
+		"client returns data": {
+			"url1",
+			clientResponse{newResponseWithFileData([]byte{0x01, 0x02}), nil},
+			[]byte{0x01, 0x02},
+			nil,
+		},
+		"client returns error": {
+			"url1",
+			clientResponse{&http.Response{}, errors.New("")},
+			nil,
+			errors.New(""),
+		},
+	}
+
+	for _, testcase := range testcases {
+		tc := testcase
+		t.Run(tc.url, func(tt *testing.T) {
+			tt.Parallel()
+			m := &MockHTTPClient{}
+			m.Test(tt)
+			m.On("Get", tc.url).Once().Return(tc.response.rsp, tc.response.err)
+			d := NewDownloader(m)
+			w := &bytes.Buffer{}
+			err := d.Download(w, tc.url)
+			if err != nil {
+				assert.Equal(t, tc.expectedError, err)
+			} else {
+				assert.NoError(t, err)
+				b := w.Bytes()
+				assert.Equal(tt, tc.expectedData, b)
+			}
+		})
+	}
 }
