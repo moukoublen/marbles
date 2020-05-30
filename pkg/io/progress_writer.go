@@ -41,8 +41,8 @@ func NewProgressWritterWithInternalChannel(name string, totalBytes int, writer i
 	}
 }
 
-// NewProgressWritterWithExterbalChannel creates a new ProgressWritter given a progress channel
-func NewProgressWritterWithExterbalChannel(name string, totalBytes int, writer io.Writer, progressCh chan WritterProgressUpdate) *ProgressWritter {
+// NewProgressWritterWithExternalChannel creates a new ProgressWritter given a progress channel
+func NewProgressWritterWithExternalChannel(name string, totalBytes int, writer io.Writer, progressCh chan WritterProgressUpdate) *ProgressWritter {
 	return &ProgressWritter{
 		name:         name,
 		totalBytes:   totalBytes,
