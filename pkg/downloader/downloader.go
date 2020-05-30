@@ -8,51 +8,31 @@ import (
 	"strings"
 )
 
-func filenameFromURL(url string) string {
-	a := strings.Split(url, "/")
-	if len(a) == 0 {
-		return ""
-	}
-	return a[len(a)-1]
+// ContentDispositionHeader header name
+const ContentDispositionHeader = "content-disposition"
+
+// HTTPClient is the interface for http client methods
+type HTTPClient interface {
+	Head(url string) (resp *http.Response, err error)
+	Get(url string) (resp *http.Response, err error)
 }
 
-var rgxFilename = regexp.MustCompile(`filename="(.*)"`)
-
-func filenameFromContentDisposition(cd string) string {
-	r := rgxFilename.FindStringSubmatch(cd)
-	if len(r) >= 2 {
-		return r[1]
-	}
-	return ""
+// Downloader structure
+type Downloader struct {
+	Client HTTPClient
 }
 
-func filenameFromHeader(url string) string {
-	resp, err := http.Head(url)
-	if err != nil {
-		return ""
+// NewDownloader Downloader constructor
+func NewDownloader(client HTTPClient) *Downloader {
+	return &Downloader{
+		Client: client,
 	}
-
-	f := filenameFromContentDisposition(resp.Header.Get("content-disposition"))
-	if f != "" {
-		return f
-	}
-
-	return filenameFromURL(f)
 }
 
-// GetFilename returns the filename of file to download.
-func GetFilename(url string) string {
-	return ""
-}
-
-//Download function
-func Download(filepath string, url string) error {
+// Download the file from the given url in the given file path.
+func (d *Downloader) Download(filepath string, url string) error {
 	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	resp, err := d.Client.Get(url)
 
 	// Create the file
 	out, err := os.Create(filepath)
@@ -64,4 +44,38 @@ func Download(filepath string, url string) error {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+// GetFilename returns the filename of file to download.
+func (d *Downloader) GetFilename(url string) string {
+	f := d.filenameFromHeader(url)
+	if len(f) > 0 {
+		return f
+	}
+	return filenameFromURL(url)
+}
+
+var rgxFilename = regexp.MustCompile(`filename="(.*)"`)
+
+func (d *Downloader) filenameFromHeader(url string) string {
+	resp, err := d.Client.Head(url)
+	if err != nil {
+		return ""
+	}
+
+	cd := resp.Header.Get(ContentDispositionHeader)
+	r := rgxFilename.FindStringSubmatch(cd)
+	if len(r) >= 2 {
+		return r[1]
+	}
+
+	return ""
+}
+
+func filenameFromURL(url string) string {
+	a := strings.Split(url, "/")
+	if len(a) == 0 {
+		return ""
+	}
+	return a[len(a)-1]
 }
