@@ -54,11 +54,17 @@ func TestVersionComparison(t *testing.T) {
 			assert.NoError(t, err)
 			assert.NotNil(t, vb)
 
-			assert.Equal(t, tc.Equal, va.Equal(vb), "Equal expected to be %v", tc.Equal)
-			assert.Equal(t, tc.GreaterThan, va.GreaterThan(vb), "GreaterThan expected to be %v", tc.GreaterThan)
-			assert.Equal(t, tc.GreaterThanOrEqual, va.GreaterThanOrEqual(vb), "GreaterThanOrEqual expected to be %v", tc.GreaterThanOrEqual)
-			assert.Equal(t, tc.LessThan, va.LessThan(vb), "LessThan expected to be %v", tc.LessThan)
-			assert.Equal(t, tc.LessThanOrEqual, va.LessThanOrEqual(vb), "LessThanOrEqual expected to be %v", tc.LessThanOrEqual)
+			boolCheck(tt, tc.Equal, va.Equal(vb), "Equal")
+			boolCheck(tt, tc.GreaterThan, va.GreaterThan(vb), "GreaterThan")
+			boolCheck(tt, tc.GreaterThanOrEqual, va.GreaterThanOrEqual(vb), "GreaterThanOrEqual")
+			boolCheck(tt, tc.LessThan, va.LessThan(vb), "LessThan")
+			boolCheck(tt, tc.LessThanOrEqual, va.LessThanOrEqual(vb), "LessThanOrEqual")
 		})
+	}
+}
+
+func boolCheck(t *testing.T, expected, outcome bool, name string) {
+	if expected != outcome {
+		t.Errorf("%s expected to be %v", name, expected)
 	}
 }
