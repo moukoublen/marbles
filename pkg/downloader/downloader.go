@@ -3,7 +3,6 @@ package downloader
 import (
 	"io"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 )
@@ -30,19 +29,14 @@ func NewDownloader(client HTTPClient) *Downloader {
 }
 
 // Download the file from the given url in the given file path.
-func (d *Downloader) Download(filepath string, url string) error {
-	// Get the data
+func (d *Downloader) Download(writer io.Writer, url string) error {
 	resp, err := d.Client.Get(url)
-
-	// Create the file
-	out, err := os.Create(filepath)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer resp.Body.Close()
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
+	_, err = io.Copy(writer, resp.Body)
 	return err
 }
 

@@ -1,8 +1,10 @@
 package downloader
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -20,9 +22,15 @@ func newContentDispositionHeader(filename string) http.Header {
 	return h
 }
 
-func newResponse(filename string) *http.Response {
+func newResponseWithContentDispositionHeader(filename string) *http.Response {
 	return &http.Response{
 		Header: newContentDispositionHeader(filename),
+	}
+}
+
+func newResponseWithFileData(byteData []byte) *http.Response {
+	return &http.Response{
+		Body: ioutil.NopCloser(bytes.NewReader(byteData)),
 	}
 }
 
@@ -54,12 +62,12 @@ func TestGetFilename(t *testing.T) {
 		},
 		"content disposition contains filename 1": {
 			"url2",
-			clientResponse{newResponse("file1.tar.bz2"), nil},
+			clientResponse{newResponseWithContentDispositionHeader("file1.tar.bz2"), nil},
 			"file1.tar.bz2",
 		},
 		"content disposition contains filename 2": {
 			"url3",
-			clientResponse{newResponse("file"), nil},
+			clientResponse{newResponseWithContentDispositionHeader("file"), nil},
 			"file",
 		},
 		"name from url 1": {
