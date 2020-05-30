@@ -15,8 +15,6 @@ type HTTPClient interface {
 // RemoteVersion interface
 type RemoteVersion interface {
 	GetLatestVersion() (*Version, error)
-	GetLatestLTSVersion() (*Version, error)
-	String() string
 }
 
 // RemoteVersionGithub remote version functionality for github
@@ -45,11 +43,20 @@ func (g RemoteVersionGithub) GetLatestVersion(client HTTPClient) (*Version, erro
 		return nil, err
 	}
 
-	v, err := ParseVersion(m["tag_name"].(string))
+	v, err := ParseVersion(keyAsString(m, "tag_name"))
 	if err == nil {
 		return v, nil
 	}
 
-	v, err = ParseVersion(m["name"].(string))
+	v, err = ParseVersion(keyAsString(m, "name"))
 	return v, err
+}
+
+func keyAsString(j map[string]interface{}, key string) string {
+	if i, found := j[key]; found {
+		if o, isString := i.(string); isString {
+			return o
+		}
+	}
+	return ""
 }
