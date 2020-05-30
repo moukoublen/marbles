@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/integrii/flaggy"
-	"github.com/moukoublen/marbles/internal/app/commands"
+	"github.com/moukoublen/marbles/internal/commands"
 )
 
 func initCliUpdate() {
