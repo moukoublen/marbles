@@ -10,13 +10,13 @@ env:
 		go env
 
 test:
-		go test -timeout 60s $$(go list ./...)
+		go test -race -timeout 60s $$(go list ./...)
 
 test-integration:
-		go test -v -tags=integration -timeout 60s $$(go list ./...)
+		go test -race -v -tags=integration -timeout 60s $$(go list ./...)
 
 test-coverage:
-		go test -timeout 60s -coverprofile cover.out -covermode atomic $$(go list ./...)
+		go test -race -timeout 60s -coverprofile cover.out -covermode atomic $$(go list ./...)
 		go tool cover -func cover.out
 		rm cover.out
 
