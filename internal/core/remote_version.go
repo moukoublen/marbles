@@ -17,8 +17,8 @@ type RemoteVersion interface {
 	GetLatestVersion() (*Version, error)
 }
 
-// RemoteVersionGithub remote version functionality for github
-type RemoteVersionGithub struct {
+// RemoteVersionGitHub remote version functionality for github
+type RemoteVersionGitHub struct {
 	OwnerName string
 	RepoName  string
 }
@@ -26,7 +26,7 @@ type RemoteVersionGithub struct {
 const githubLatestReleaseF = "https://api.github.com/repos/%s/%s/releases/latest"
 
 // GetLatestVersion from github
-func (g RemoteVersionGithub) GetLatestVersion(client HTTPClient) (*Version, error) {
+func (g RemoteVersionGitHub) GetLatestVersion(client HTTPClient) (*Version, error) {
 	url := fmt.Sprintf(githubLatestReleaseF, g.OwnerName, g.RepoName)
 	resp, err := client.Get(url)
 	if err != nil {
