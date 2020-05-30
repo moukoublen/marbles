@@ -33,10 +33,12 @@ func (g RemoteVersionGithub) GetLatestVersion(client HTTPClient) (*Version, erro
 		return nil, err
 	}
 	defer resp.Body.Close()
+
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
+
 	m := make(map[string]interface{})
 	err = json.Unmarshal(bodyBytes, &m)
 	if err != nil {
