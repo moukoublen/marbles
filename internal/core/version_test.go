@@ -10,9 +10,10 @@ func TestParseVersion(t *testing.T) {
 	var testcases = map[string]struct {
 		ver          string
 		parseSuccess bool
+		printedVer   string
 	}{
-		"parse error":   {"hello", false},
-		"parse success": {"v1.13.0", true},
+		"parse error":   {"hello", false, ""},
+		"parse success": {"v1.13.0", true, "1.13.0"},
 	}
 
 	for name, testcase := range testcases {
@@ -23,6 +24,13 @@ func TestParseVersion(t *testing.T) {
 			parseSuccess := (err == nil) && (v != nil)
 			if tc.parseSuccess != parseSuccess {
 				tt.Errorf("Parse status sould be %v and is %v", tc.parseSuccess, parseSuccess)
+			}
+
+			if tc.parseSuccess {
+				s := v.String()
+				if s != tc.printedVer {
+					tt.Errorf("Error in version string. Expected %s got %s", tc.printedVer, s)
+				}
 			}
 		})
 	}

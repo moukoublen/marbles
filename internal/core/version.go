@@ -46,6 +46,11 @@ func (v *Version) LessThanOrEqual(o *Version) bool {
 	return v.Compare(o) <= 0
 }
 
+// String prints version.
+func (v *Version) String() string {
+	return v.inner.String()
+}
+
 // ParseVersion fubction
 func ParseVersion(ver string) (*Version, error) {
 	v, err := version.NewVersion(ver)
