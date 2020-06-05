@@ -1,54 +1,72 @@
-default: build
+SHELL := /bin/bash
 
-GO111MODULE?=on
-export GO111MODULE
+NAME := marbles
+PKG := github.com/moukoublen/${NAME}
+MAINCMD := ./cmd/${NAME}
 
-EXEC?=marbles
-MAINCMD?=./cmd/marbles
+GO111MODULE := on
+CGO_ENABLED := 0
 
+IMAGE := marbles:latest
+VERSION?=0.0.1
+VER_FLAGS=-X ${PKG}/version=${VERSION}
+GO_LDFLAGS=-ldflags "-w -s ${VER_FLAGS}"
+GO_LDFLAGS_STATIC=-ldflags "-w -s ${VER_FLAGS} -extldflags -static"
+
+#Commands
+GO := go
+DOCKER := docker
+COMPOSE := docker-compose
+
+.PHONY: default
+default: static
+
+.PHONY: env
 env:
-		go env
+		$(GO) env
 
+.PHONY: test
 test:
-		go test -race -timeout 60s $$(go list ./...)
+		$(GO) test -timeout 60s $(shell go list ./... | grep -v vendor)
 
-test-integration:
-		go test -race -v -tags=integration -timeout 60s $$(go list ./...)
-
+.PHONY: test-coverage
 test-coverage:
-		go test -race -timeout 60s -coverprofile cover.out -covermode atomic $$(go list ./...)
-		go tool cover -func cover.out
+		$(GO) test -timeout 60s -coverprofile cover.out -covermode atomic $(shell go list ./... | grep -v vendor)
+		$(GO) tool cover -func cover.out
 		rm cover.out
 
+.PHONY: fmt
 fmt:
-		go fmt $$(go list ./...)
+		$(shell gofmt -s -l . | grep -v vendor)
 
+.PHONY: lint
 lint:
-		golint $$(go list ./...)
+		$(shell golint ./... | grep -v vendor)
 
+lint-ci:
+		$(DOCKER) run --rm -v $(shell pwd):/app:ro -w /app golangci/golangci-lint:v1.27.0 golangci-lint run
+
+.PHONY: vet
 vet:
-		go vet $$(go list ./...)
+		$(GO) vet $(shell $(GO) list ./...| grep -v vendor)
 
+.PHONY: mod
 mod:
-		go mod tidy
-		go mod verify
+		$(GO) mod tidy
+		$(GO) mod verify
 
-vendor: mod
-		go mod vendor
+.PHONY: vendor
+vendor:
+		$(GO) mod vendor
 
-build: vendor
-		go build -mod=vendor -a -o $(EXEC) $(MAINCMD)
+.PHONY: build
+build:
+		$(GO) build -a -mod=vendor ${GO_LDFLAGS} -o ${NAME} ${MAINCMD}
 
-run: vendor
-		go run -mod=vendor $(MAINCMD)
+.PHONY: static
+static:
+		CGO_ENABLED=${CGO_ENABLED} $(GO) build -a -mod=vendor ${GO_LDFLAGS_STATIC} -o ${NAME} ${MAINCMD}
 
+.PHONY: clean
 clean:
-		rm -f $(EXEC)
-
-install:
-		cp $(EXEC) /usr/local/bin
-
-uninstall:
-		rm -f /usr/local/bin/$(EXEC)
-
-.PHONY: env test fmt lint vet mod vendor build run clean install uninstall
+		rm -f ${NAME}
