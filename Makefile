@@ -70,3 +70,11 @@ static:
 .PHONY: clean
 clean:
 		rm -f ${NAME}
+
+.PHONY: install
+install:
+		cp ${NAME} /usr/local/bin
+
+.PHONY: uninstall
+uninstall:
+		rm -f /usr/local/bin/${NAME}
