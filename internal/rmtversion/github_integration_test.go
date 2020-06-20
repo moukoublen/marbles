@@ -1,6 +1,6 @@
 // +build integration
 
-package core
+packge rmtversion
 
 import (
 	"net/http"

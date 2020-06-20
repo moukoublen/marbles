@@ -1,21 +1,12 @@
-package core
+package rmtversion
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
+
+	"github.com/moukoublen/marbles/internal/core"
 )
-
-// HTTPClient interface
-type HTTPClient interface {
-	Get(url string) (resp *http.Response, err error)
-}
-
-// RemoteVersion interface
-type RemoteVersion interface {
-	GetLatestVersion() (*Version, error)
-}
 
 // RemoteVersionGitHub remote version functionality for github
 type RemoteVersionGitHub struct {
@@ -26,7 +17,7 @@ type RemoteVersionGitHub struct {
 const githubLatestReleaseF = "https://api.github.com/repos/%s/%s/releases/latest"
 
 // GetLatestVersion from github
-func (g RemoteVersionGitHub) GetLatestVersion(client HTTPClient) (*Version, error) {
+func (g RemoteVersionGitHub) GetLatestVersion(client HTTPClient) (*core.Version, error) {
 	url := fmt.Sprintf(githubLatestReleaseF, g.OwnerName, g.RepoName)
 	resp, err := client.Get(url)
 	if err != nil {
@@ -45,12 +36,12 @@ func (g RemoteVersionGitHub) GetLatestVersion(client HTTPClient) (*Version, erro
 		return nil, err
 	}
 
-	v, err := ParseVersion(keyAsString(m, "tag_name"))
+	v, err := core.ParseVersion(keyAsString(m, "tag_name"))
 	if err == nil {
 		return v, nil
 	}
 
-	v, err = ParseVersion(keyAsString(m, "name"))
+	v, err = core.ParseVersion(keyAsString(m, "name"))
 	return v, err
 }
 

@@ -5,6 +5,7 @@ PKG := github.com/moukoublen/${NAME}
 MAINCMD := ./cmd/${NAME}
 
 GO111MODULE := on
+export GO111MODULE
 CGO_ENABLED := 0
 
 IMAGE := marbles:latest
@@ -36,8 +37,11 @@ test-coverage:
 		rm cover.out
 
 .PHONY: fmt
-fmt:
-		$(shell gofmt -s -l . | grep -v vendor)
+fmt: ## Verifies all files have been `gofmt`ed.
+	@echo "+ $@"
+	@if [[ ! -z "$(shell gofmt -s -l . | grep -v vendor | tee /dev/stderr)" ]]; then \
+		exit 1; \
+	fi
 
 .PHONY: lint
 lint:
