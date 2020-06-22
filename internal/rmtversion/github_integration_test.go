@@ -20,7 +20,7 @@ func TestGetLatestRelease(t *testing.T) {
 		tc := testcase
 		t.Run(name, func(tt *testing.T) {
 			tt.Parallel()
-			g := RemoteVersionGithub{
+			g := RemoteVersionGitHub{
 				OwnerName: tc.owner,
 				RepoName:  tc.repo,
 			}
