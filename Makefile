@@ -7,17 +7,19 @@ MAINCMD := ./cmd/${NAME}
 GO111MODULE := on
 export GO111MODULE
 CGO_ENABLED := 0
-
-IMAGE := marbles:latest
 VERSION?=0.0.1
 VER_FLAGS=-X ${PKG}/version=${VERSION}
 GO_LDFLAGS=-ldflags "-w -s ${VER_FLAGS}"
 GO_LDFLAGS_STATIC=-ldflags "-w -s ${VER_FLAGS} -extldflags -static"
 
-#Commands
 GO := go
 DOCKER := docker
 COMPOSE := docker-compose
+
+IMAGE := ${NAME}
+IMAGE_TAG := latest
+
+PACKAGES = $(shell $(GO) list ./... | grep -v vendor)
 
 .PHONY: default
 default: static
@@ -28,31 +30,32 @@ env:
 
 .PHONY: test
 test:
-		$(GO) test -timeout 60s $(shell go list ./... | grep -v vendor)
+		$(GO) test -timeout 60s ${PACKAGES}
 
 .PHONY: test-coverage
 test-coverage:
-		$(GO) test -timeout 60s -coverprofile cover.out -covermode atomic $(shell go list ./... | grep -v vendor)
+		$(GO) test -timeout 60s -coverprofile cover.out -covermode atomic ${PACKAGES}
 		$(GO) tool cover -func cover.out
 		rm cover.out
 
 .PHONY: fmt
-fmt: ## Verifies all files have been `gofmt`ed.
-	@echo "+ $@"
-	@if [[ ! -z "$(shell gofmt -s -l . | grep -v vendor | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
+fmt:
+		[[ -z "$$(gofmt -s -l . | tee /dev/stderr)" ]] || exit 1
 
 .PHONY: lint
 lint:
-		$(shell golint ./... | grep -v vendor)
+		[[ -z "$$(golint ${PACKAGES} | tee /dev/stderr)" ]] || exit 1
 
-lint-ci:
+.PHONY: dockerized-lint-ci
+dockerized-lint-ci:
 		$(DOCKER) run --rm -v $(shell pwd):/app:ro -w /app golangci/golangci-lint:v1.27.0 golangci-lint run
 
 .PHONY: vet
 vet:
-		$(GO) vet $(shell $(GO) list ./...| grep -v vendor)
+		$(GO) vet ${PACKAGES}
+
+.PHONY: checks
+checks: fmt lint vet
 
 .PHONY: mod
 mod:
@@ -75,10 +78,6 @@ static:
 clean:
 		rm -f ${NAME}
 
-.PHONY: install
-install:
-		cp ${NAME} /usr/local/bin
-
-.PHONY: uninstall
-uninstall:
-		rm -f /usr/local/bin/${NAME}
+.PHONY: image
+image:
+		$(DOCKER) build . -f .docker/Dockerfile -t ${IMAGE}:${IMAGE_TAG}
