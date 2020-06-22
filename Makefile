@@ -40,7 +40,7 @@ test-coverage:
 
 .PHONY: fmt
 fmt:
-		[[ -z "$$(gofmt -s -l . | tee /dev/stderr)" ]] || exit 1
+		[[ -z "$$(gofmt -s -l . | grep -v vendor | tee /dev/stderr)" ]] || exit 1
 
 .PHONY: lint
 lint:
