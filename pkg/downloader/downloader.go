@@ -1,3 +1,4 @@
+// Package downloader continas download functionality bundled with file name resolving.
 package downloader
 
 import (

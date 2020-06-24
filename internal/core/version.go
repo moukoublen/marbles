@@ -1,3 +1,4 @@
+// Package core contains the core models of marbles. Version hiddes the internal implementation.
 package core
 
 import (

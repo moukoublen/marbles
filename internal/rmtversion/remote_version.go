@@ -1,3 +1,4 @@
+// Package rmtversion contains the remote version featcher interface and implementations (such as github)
 package rmtversion
 
 import (

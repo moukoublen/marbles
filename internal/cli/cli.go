@@ -1,3 +1,4 @@
+// Package cli contains the cli handling functionality.
 package cli
 
 import (
@@ -5,10 +6,10 @@ import (
 	"github.com/moukoublen/marbles/internal/commands"
 )
 
-func initCliUpdate() {
-	uc := flaggy.NewSubcommand("update")
-	flaggy.AttachSubcommand(uc, 1)
-}
+// func initCliUpdate() {
+// 	uc := flaggy.NewSubcommand("update")
+// 	flaggy.AttachSubcommand(uc, 1)
+// }
 
 func initCli() {
 	var stringFlag = "defaultValue"

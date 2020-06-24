@@ -1,3 +1,4 @@
+// Package utils is a util package for tests.
 package utils
 
 import (

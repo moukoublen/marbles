@@ -1,3 +1,4 @@
+// Package io is a public package that contains the writer with asyncronus progress notification functionality.
 package io
 
 import (

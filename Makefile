@@ -7,6 +7,7 @@ MAINCMD := ./cmd/${NAME}
 GO111MODULE := on
 export GO111MODULE
 CGO_ENABLED := 0
+export CGO_ENABLED
 VERSION?=0.0.1
 VER_FLAGS=-X ${PKG}/version=${VERSION}
 GO_LDFLAGS=-ldflags "-w -s ${VER_FLAGS}"
@@ -123,7 +124,7 @@ build:
 
 .PHONY: static
 static:
-	CGO_ENABLED=${CGO_ENABLED} $(GO) build -a -mod=vendor ${GO_LDFLAGS_STATIC} -o ${NAME} ${MAINCMD}
+	$(GO) build -a -mod=vendor ${GO_LDFLAGS_STATIC} -o ${NAME} ${MAINCMD}
 
 .PHONY: clean
 clean:
