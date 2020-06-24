@@ -23,7 +23,7 @@ func TestParseVersion(t *testing.T) {
 			v, err := ParseVersion(tc.ver)
 			parseSuccess := (err == nil) && (v != nil)
 			if tc.parseSuccess != parseSuccess {
-				tt.Errorf("Parse status sould be %v and is %v", tc.parseSuccess, parseSuccess)
+				tt.Errorf("Parse status should be %v and is %v", tc.parseSuccess, parseSuccess)
 			}
 
 			if tc.parseSuccess {

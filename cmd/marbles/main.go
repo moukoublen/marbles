@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/moukoublen/marbles/internal/cli"
 	"os"
+
+	"github.com/moukoublen/marbles/internal/cli"
 )
 
 func main() {
