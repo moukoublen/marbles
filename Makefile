@@ -46,11 +46,12 @@ test-coverage test-coverage-integration:
 .PHONY: goimports
 goimports:
 	@echo ">>> goimports <<<"
-	@FILES="$$(goimports -d -e $(FOLDERS))"; \
-		if [[ -n "$${FILES}" ]]; then \
-			echo "$${FILES}"; \
+	@DIFFS="$$(goimports -d -e $(FOLDERS))"; \
+		if [[ -n "$${DIFFS}" ]]; then \
+			echo "$${DIFFS}"; \
 			echo -e "\n"; \
-			echo "goimports errors (run goimports -w $(FOLDERS))"; \
+			echo "goimports errors. Run the below command to fix them:"; \
+			echo "goimports -w $(FOLDERS)"; \
 			exit 1; \
 		fi
 	@echo ""
@@ -58,11 +59,12 @@ goimports:
 .PHONY: gofmt
 gofmt:
 	@echo ">>> gofmt <<<"
-	@FILES="$$(gofmt -d $(FOLDERS))"; \
-		if [[ -n "$${FILES}" ]]; then \
-			echo "$${FILES}"; \
+	@DIFFS="$$(gofmt -d $(FOLDERS))"; \
+		if [[ -n "$${DIFFS}" ]]; then \
+			echo "$${DIFFS}"; \
 			echo -e "\n"; \
-			echo -e "gofmt errors (run gofmt -s -w $(FOLDERS))"; \
+			echo "gofmt errors. Run the below command to fix them:"; \
+			echo "gofmt -s -w $(FOLDERS)"; \
 			exit 1; \
 		fi
 	@echo ""
@@ -98,7 +100,7 @@ vet:
 checks: fmt staticcheck lint vet
 
 .PHONY: dockerized-checks
-dockerized-checks:
+dockerized-checks: mod vendor
 	$(DOCKER) run --rm -it -v $(shell pwd):/app:ro -w /app ${NAME}-tests make checks
 
 #@go get github.com/client9/misspell/cmd/misspell
